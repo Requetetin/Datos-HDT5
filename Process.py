@@ -9,7 +9,7 @@ class Process:
         self.Instructions = Instructions
         
     def getName(self):
-        print ('Process %s' % self.name)
+        return 'Process %s' % self.name
         
     def getRAM(self):
         return self.RAM_Needed
