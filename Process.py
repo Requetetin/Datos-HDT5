@@ -2,6 +2,8 @@ class Process:
     name = ''
     RAM_Needed = 0
     Instructions = 0
+    time = 0
+    fin = 0
     
     def __init__(self, name, RAM_Needed, Instructions):
         self.name = name
@@ -19,3 +21,12 @@ class Process:
 
     def setInstructions(self, Instructions):
         self.Instructions = Instructions
+        
+    def setInicio(self, time):
+        self.time = time
+        
+    def setFinal(self, fin):
+        self.fin = fin
+        
+    def getTime(self):
+        return self.time - self.fin

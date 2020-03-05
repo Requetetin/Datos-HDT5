@@ -5,7 +5,6 @@ import Process as pro
 
 Time_Taken = 0
 Total_Time = 0
-Total_Processes = 0
 
 
 
@@ -20,6 +19,7 @@ def new(env, process):
         
         
     print('%s entered the RAM at %.2f' % (pro.Process.getName(process), env.now))
+    pro.Process.setInicio(process, env.now)
     yield env.timeout(1)
     env.process(ready(env, process))
     
@@ -43,7 +43,7 @@ def ready(env, process):
 
 #Funcion Running realiza 3 instrucciones del proceso 
 def running(env, process):
-    if pro.Process.getInstructions(process) > 3:     #Modificar para que el CPU procese mas de 3 isntrucciones
+    if pro.Process.getInstructions(process) > 5:     #Modificar para que el CPU procese mas de 3 isntrucciones
         pro.Process.setInstructions(process, pro.Process.getInstructions(process) - 3)
         rand = random.randint(1,2)
         if rand == 1:
@@ -68,22 +68,38 @@ def waiting(env, process):
 #Funcion Terminated hace que el proceso salga del sistema
 def terminated(env, process):
     print('%s exited the CPU at %.2f' % (pro.Process.getName(process), env.now))
+    global Total_Time
+    Total_Time = env.now
+    pro.Process.setFinal(process, env.now)
     yield env.timeout(0)
 
 
 env = simpy.Environment()
-RAM = simpy.Container(env, init = 100, capacity = 100)
-CPU = simpy.Resource(env, capacity = 1)
+RAM = simpy.Container(env, init = 200, capacity = 200)  #Cambiar para RAM
+CPU = simpy.Resource(env, capacity = 2) #Cambiar CPU
 
 random.seed(10)
-
-for i in range(10):
+Corridas = 200  #Cambiar para el numero de procesos
+procesos = list()
+for i in range(Corridas):
     inst = random.randint(1,10)     #Numero de instrucciones del proceso
     ram = random.randint(1, 10) #Espacio en la ram necesitado
     pr = pro.Process(i, ram, inst)
+    procesos.append(pr)
     env.process(new(env, pr))
 
 
 
 
 env.run()
+print('')
+print('El promedio de corrida fue de: %.2f' % (Total_Time/Corridas)) 
+Media = Total_Time/Corridas
+s = 0
+for i in procesos:
+    s += (i.getTime()-Media)**2
+
+Desvest = (s/Corridas)**(1/2.0)
+print('La desviacion estandar de la corrida fue de: %.2f' % (Desvest))
+
+
